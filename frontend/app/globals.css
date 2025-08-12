@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Tooltip Styles for the Sidebar */
+.group .tooltip {
+  @apply invisible absolute opacity-0 transition-all duration-300 ease-in-out;
+}
+
+.group:hover .tooltip {
+  @apply visible opacity-100;
+}
+
+/* Custom Icon Animation for Sidebar Buttons */
+@keyframes bounce-in-out {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+.group:hover .icon-animate {
+  animation: bounce-in-out 0.3s ease-in-out;
+}

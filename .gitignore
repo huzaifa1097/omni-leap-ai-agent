@@ -1,0 +1,48 @@
+# Python / Backend
+__pycache__/
+venv/
+.venv/
+*.pyc
+.env
+aws.txt
+backend/chroma_db/
+backend/db/
+backend/static/
+backend/credentials.json
+backend/token.json
+backend/crewai-rag-tool.lock
+trained_agents_data.pkl
+backend/firebase-service-account.json
+
+# Node.js / Frontend
+node_modules/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build and temporary files
+dist/
+build/
+*.log
+*.tmp
+*.bak
+*.backup
+start_server.bat
+crewai-rag-tool.lock
+test_blog_output.md
+
+# Unnecessary directories
+working code/
+check_structure/
+

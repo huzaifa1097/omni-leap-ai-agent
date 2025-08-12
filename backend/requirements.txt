@@ -1,0 +1,53 @@
+# --- Core Application ---
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-dotenv>=1.0.0
+
+# --- LangChain Ecosystem ---
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-google-genai>=0.0.6
+langchainhub>=0.1.14
+langchain-experimental>=0.0.47
+langchain-community>=0.0.10
+
+# --- CrewAI ---
+crewai>=0.22.0
+crewai-tools>=0.4.0
+
+# --- Search Tools (alternatives) ---
+duckduckgo-search>=4.0.0
+
+# --- Google APIs ---
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.1.0
+google-cloud-secret-manager
+
+# --- Data & APIs ---
+newsapi-python>=0.2.6
+pandas>=2.0.0
+requests>=2.31.0
+wikipedia>=1.4.0
+
+# --- Firebase & Storage ---
+firebase-admin>=6.2.0
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# --- Financial Data ---
+alpha_vantage>=2.3.1
+yfinance>=0.2.25
+
+# --- Visualization ---
+matplotlib>=3.7.0
+
+# --- Audio Processing ---
+google-cloud-speech>=2.21.0
+google-cloud-texttospeech>=2.14.2
+elevenlabs>=0.2.26
+
+# --- File Upload ---
+python-multipart>=0.0.6
+langchain-groq
+langchain-ollama
