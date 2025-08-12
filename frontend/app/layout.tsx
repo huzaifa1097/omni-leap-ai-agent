@@ -9,6 +9,10 @@ const sora = Sora({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "OmniLeap Agent",
   description: "The Unified Intelligence Agent",
+  icons: {
+    icon: "/omni-leap-logo.svg",
+    shortcut: "/omni-leap-logo.svg",
+  },
 };
 
 export default function RootLayout({
