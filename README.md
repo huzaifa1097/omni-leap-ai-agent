@@ -27,9 +27,6 @@
 |------------|-------------|
 | ![Login](docs/loginpage.png) | ![Profile](docs/profilepage.png) |
 
-**RAG System in Action 🎥**  
-[▶ Watch Video](docs/workingrag.mp4)
-
 ---
 
 ## ✨ Features
