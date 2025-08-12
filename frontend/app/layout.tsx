@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   description: "The Unified Intelligence Agent",
   icons: {
     icon: "/omni-leap-logo.svg",
-    shortcut: "/omni-leap-logo.svg",
   },
 };
 
