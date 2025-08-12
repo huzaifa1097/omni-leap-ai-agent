@@ -10,6 +10,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
+import Image from 'next/image';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -70,8 +71,8 @@ export const LoginPage = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white p-4">
       <div className="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-2xl shadow-2xl">
         <div className="text-center">
-            <div className="inline-block p-3 bg-blue-600 rounded-full mb-4">
-                <Bot size={40} />
+             <div className="inline-block mb-4">
+                <Image src="/omni-leap-logo.svg" alt="OmniLeap Logo" width={80} height={80} />
             </div>
             <h1 className="text-3xl font-bold">
             {isLogin ? 'Welcome to OmniLeap' : 'Create Your Account'}

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Send, Bot, User, LoaderCircle, Sparkles } from 'lucide-react';
 import { useAuth } from '../../lib/auth';
 import ReactMarkdown from 'react-markdown';
+import Image from 'next/image';
 
 export interface Message {
   id: string;
@@ -23,7 +24,9 @@ const WelcomeScreen = ({ setInput }: { setInput: (val: string) => void }) => {
     const examplePrompts = ["What's the weather in Lucknow?", "Who was Alan Turing?", "/blog The Future of AI"];
     return (
         <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="p-4 bg-gray-800 rounded-full mb-4"><Sparkles size={40} className="text-blue-400" /></div>
+            <div className="mb-4">
+                <Image src="/omni-leap-logo.svg" alt="OmniLeap Logo" width={64} height={64} />
+            </div>
             <h1 className="text-2xl font-bold mb-2">OmniLeap Agent</h1>
             <p className="text-gray-400 mb-8">Your intelligent assistant is ready. Try an example:</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">

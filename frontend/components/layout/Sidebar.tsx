@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Bot, UserCircle, Power, Sun, Moon, MessageSquare, LayoutDashboard, PlusCircle } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
+import Image from 'next/image';
 
 type Page = 'chat' | 'profile' | 'dashboard';
 
@@ -76,7 +77,7 @@ export const Sidebar = ({ currentPage, setCurrentPage, isDark, setIsDark, startN
       <nav className="w-20 bg-gray-800 p-3 flex flex-col items-center justify-between transition-all duration-300 hover:w-24">
         <div className="w-full space-y-4">
           <div className="flex justify-center p-2 mb-4">
-            <Bot size={32} className="text-blue-400" />
+            <Image src="/omni-leap-logo.svg" alt="OmniLeap Logo" width={40} height={40} />
           </div>
           <SidebarButton 
             icon={<PlusCircle size={24} className="mx-auto" />}
