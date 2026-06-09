@@ -11,11 +11,9 @@ from app.services.firebase_service import (
 )
 from app.services.vector_db_service import add_text_to_vector_db
 from app.core.crews.blog_crew import create_blog_post_crew
-from slowapi import Limiter
-from slowapi.util import get_remote_address
+from app.core.limiter import limiter
 
 router = APIRouter()
-limiter = Limiter(key_func=get_remote_address)
 
 class CrewRequest(BaseModel):
     topic: str
