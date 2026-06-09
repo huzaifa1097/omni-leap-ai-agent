@@ -3,17 +3,19 @@ from pydantic import BaseModel
 from app.models.chat_models import ChatRequest, ChatResponse
 from app.core.agent import run_agent
 from app.services.firebase_service import (
-    verify_firebase_token, 
-    save_message_to_firestore, 
+    verify_firebase_token,
+    save_message_to_firestore,
     get_conversations_from_firestore,
     delete_conversation_from_firestore,
-    delete_single_session_from_firestore
+    delete_single_session_from_firestore,
 )
-
 from app.services.vector_db_service import add_text_to_vector_db
 from app.core.crews.blog_crew import create_blog_post_crew
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 class CrewRequest(BaseModel):
     topic: str
@@ -42,38 +44,36 @@ def get_current_user(token: str = Depends(get_firebase_token)) -> dict:
         raise HTTPException(status_code=401, detail="Invalid or expired authentication token.")
 
 @router.post("", response_model=ChatResponse)
-async def handle_chat(request: ChatRequest, user_data: dict = Depends(get_current_user)):
+@limiter.limit("20/minute")
+async def handle_chat(request: Request, body: ChatRequest, user_data: dict = Depends(get_current_user)):
     user_id = user_data['uid']
 
-    # --- THIS IS THE FIX ---
-    # We save the user's message to both databases BEFORE running the agent.
     add_text_to_vector_db(
         user_id=user_id,
-        text=request.user_input,
-        metadata={'sender': 'user', 'session_id': request.session_id}
+        text=body.user_input,
+        metadata={'sender': 'user', 'session_id': body.session_id}
     )
-    save_message_to_firestore(user_id, request.session_id, 'user', request.user_input)
+    save_message_to_firestore(user_id, body.session_id, 'user', body.user_input)
 
-    # Run the agent to get a response
-    agent_result = run_agent(request.user_input, request.session_id, user_id)
+    agent_result = run_agent(body.user_input, body.session_id, user_id)
     agent_output = agent_result.get("output", "I'm sorry, I encountered an error and couldn't process your request.")
-    
-    # And we save the agent's response to both databases AFTER it has been generated.
+
     add_text_to_vector_db(
         user_id=user_id,
         text=agent_output,
-        metadata={'sender': 'agent', 'session_id': request.session_id}
+        metadata={'sender': 'agent', 'session_id': body.session_id}
     )
-    save_message_to_firestore(user_id, request.session_id, 'agent', agent_output)
-    
+    save_message_to_firestore(user_id, body.session_id, 'agent', agent_output)
+
     return ChatResponse(output=agent_output)
 
 @router.post("/invoke_crew")
-async def handle_crew_invocation(request: CrewRequest, user_data: dict = Depends(get_current_user)):
-    if not request.topic:
+@limiter.limit("5/minute")
+async def handle_crew_invocation(request: Request, body: CrewRequest, user_data: dict = Depends(get_current_user)):
+    if not body.topic:
         raise HTTPException(status_code=400, detail="A topic is required.")
     try:
-        result = create_blog_post_crew(request.topic)
+        result = create_blog_post_crew(body.topic)
         return {"result": result}
     except Exception as e:
         print(f"Error during crew invocation: {e}")

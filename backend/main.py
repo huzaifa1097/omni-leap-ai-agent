@@ -1,16 +1,20 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from app.api.v1 import chat
 from app.api.v1 import debug
 import os
 from contextlib import asynccontextmanager
 import firebase_admin
 from firebase_admin import credentials
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
-# --- THIS IS THE FIX ---
-# Import our new secrets service
 from app.services.secrets_service import load_secrets_from_gcp
+
+limiter = Limiter(key_func=get_remote_address)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,8 +44,11 @@ app = FastAPI(
     title="OmniLeap API",
     description="The brain of the OmniLeap Unified Intelligence Agent.",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Create a directory for static files if it doesn't exist
 static_dir = "static"

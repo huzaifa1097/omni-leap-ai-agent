@@ -81,6 +81,27 @@ def delete_single_session_from_firestore(user_id: str, session_id: str):
         print(f"Error deleting session {session_id} for user {user_id}: {e}")
         return False
 
+def get_recent_session_messages(user_id: str, session_id: str, limit: int = 10) -> list:
+    """Returns the most recent messages for a session, ordered oldest-first."""
+    try:
+        db = get_db_client()
+        messages_ref = db.collection('conversations').document(user_id).collection('messages')
+        docs = (
+            messages_ref
+            .where('session_id', '==', session_id)
+            .order_by('timestamp', direction=firestore.Query.DESCENDING)
+            .limit(limit)
+            .stream()
+        )
+        # Reverse so oldest comes first (chronological order for memory seeding)
+        messages = [doc.to_dict() for doc in docs]
+        messages.reverse()
+        return messages
+    except Exception as e:
+        print(f"Could not fetch session messages for {user_id}/{session_id}: {e}")
+        return []
+
+
 def verify_firebase_token(id_token: str) -> dict:
     """Verifies the Firebase ID token from the frontend and returns the user's data."""
     try:

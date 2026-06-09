@@ -12,12 +12,13 @@ from app.core.tools.weather import weather_tool
 from app.core.tools.calendar_tool import calendar_tool
 from app.core.tools.wikipedia import wikipedia_tool
 from app.core.tools.news import news_tool
-from app.core.tools.financial_data import get_daily_stock_prices
+from app.core.tools.financial_data import get_daily_stock_prices, get_multiple_stock_prices, create_stock_comparison_chart
 from app.core.tools.code_interpreter import code_interpreter_tool
 from langchain_community.tools import DuckDuckGoSearchRun
 
 # Import the function to search the user's memory
 from app.services.vector_db_service import search_user_memory
+from app.services.firebase_service import get_recent_session_messages
 
 load_dotenv()
 
@@ -62,7 +63,9 @@ tools = [
     wikipedia_tool,
     news_tool,
     get_daily_stock_prices,
-    code_interpreter_tool
+    get_multiple_stock_prices,
+    create_stock_comparison_chart,
+    code_interpreter_tool,
 ]
 
 # Create agent only if LLM is available
@@ -85,14 +88,25 @@ if llm:
 
 SESSION_STORE = {}
 
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    """Retrieves or creates a session history for the current conversation."""
+def get_session_history(session_id: str, user_id: str) -> BaseChatMessageHistory:
+    """Retrieves session history from the in-memory cache, seeding from Firestore on a cold start."""
     if session_id not in SESSION_STORE:
-        SESSION_STORE[session_id] = ConversationBufferWindowMemory(
-            k=5, 
-            memory_key="chat_history", 
-            return_messages=True
+        mem = ConversationBufferWindowMemory(
+            k=5,
+            memory_key="chat_history",
+            return_messages=True,
         ).chat_memory
+
+        # Seed from Firestore so context survives server restarts
+        past = get_recent_session_messages(user_id, session_id, limit=10)
+        for msg in past:
+            if msg.get('sender') == 'user':
+                mem.add_user_message(msg['text'])
+            elif msg.get('sender') == 'agent':
+                mem.add_ai_message(msg['text'])
+
+        SESSION_STORE[session_id] = mem
+
     return SESSION_STORE[session_id]
 
 def run_agent(user_input: str, session_id: str, user_id: str) -> dict:
@@ -102,7 +116,7 @@ def run_agent(user_input: str, session_id: str, user_id: str) -> dict:
         return {"output": "❌ Agent not initialized. Please check your GROQ_API_KEY and restart the server."}
     
     try:
-        memory = get_session_history(session_id)
+        memory = get_session_history(session_id, user_id)
         relevant_memories = search_user_memory(user_id, user_input)
         
         if relevant_memories:

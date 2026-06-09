@@ -48,7 +48,7 @@ export const ChatPage = ({ sessionId, messages, setMessages }: ChatPageProps) =>
   
   // --- THIS IS THE FIX ---
   // The URL now correctly points to your local backend server
-  const BACKEND_URL = 'https://omni-leap-backend-service-280476321364.asia-south1.run.app';
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://omni-leap-backend-service-280476321364.asia-south1.run.app';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
